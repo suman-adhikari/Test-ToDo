@@ -4,204 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculator</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-
-        .calculator {
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 25px;
-            width: 100%;
-            max-width: 380px;
-        }
-
-        .display {
-            background: #2d3748;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: flex-end;
-        }
-
-        .display-previous {
-            color: #a0aec0;
-            font-size: 16px;
-            margin-bottom: 5px;
-            min-height: 20px;
-            word-wrap: break-word;
-            word-break: break-all;
-            text-align: right;
-            width: 100%;
-        }
-
-        .display-current {
-            color: #ffffff;
-            font-size: 36px;
-            font-weight: 300;
-            min-height: 40px;
-            word-wrap: break-word;
-            word-break: break-all;
-            text-align: right;
-            width: 100%;
-        }
-
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        button {
-            border: none;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 500;
-            padding: 22px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            outline: none;
-            background: #f7fafc;
-            color: #2d3748;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-clear {
-            background: #fc8181;
-            color: #ffffff;
-            grid-column: span 2;
-        }
-
-        .btn-clear:hover {
-            background: #f56565;
-        }
-
-        .btn-delete {
-            background: #f6ad55;
-            color: #ffffff;
-        }
-
-        .btn-delete:hover {
-            background: #ed8936;
-        }
-
-        .btn-operator {
-            background: #667eea;
-            color: #ffffff;
-        }
-
-        .btn-operator:hover {
-            background: #5a67d8;
-        }
-
-        .btn-equals {
-            background: #48bb78;
-            color: #ffffff;
-            grid-column: span 2;
-        }
-
-        .btn-equals:hover {
-            background: #38a169;
-        }
-
-        .btn-zero {
-            grid-column: span 2;
-        }
-
-        @media (max-width: 400px) {
-            .calculator {
-                padding: 20px;
-                max-width: 100%;
-            }
-
-            button {
-                padding: 18px;
-                font-size: 18px;
-            }
-
-            .display-current {
-                font-size: 28px;
-            }
-
-            .display-previous {
-                font-size: 14px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="calculator.css">
 </head>
 <body>
-    <div class="calculator">
+    <div class="calculator" role="application" aria-label="Calculator">
         <div class="display">
-            <div class="display-previous" id="previousOperand"></div>
-            <div class="display-current" id="currentOperand">0</div>
+            <div class="display-previous" id="previousOperand" role="status" aria-live="polite" aria-atomic="true" aria-label="Previous calculation"></div>
+            <div class="display-current" id="currentOperand" role="status" aria-live="polite" aria-atomic="true" aria-label="Current value">0</div>
         </div>
         <div class="buttons">
-            <button class="btn-clear" data-action="clear">AC</button>
-            <button class="btn-delete" data-action="delete">DEL</button>
-            <button class="btn-operator" data-operator="÷">÷</button>
+            <button class="btn-clear" data-action="clear" aria-label="Clear all">AC</button>
+            <button class="btn-delete" data-action="delete" aria-label="Delete last digit">DEL</button>
+            <button class="btn-operator" data-operator="÷" aria-label="Divide">÷</button>
             
-            <button data-number="7">7</button>
-            <button data-number="8">8</button>
-            <button data-number="9">9</button>
-            <button class="btn-operator" data-operator="×">×</button>
+            <button data-number="7" aria-label="Number 7">7</button>
+            <button data-number="8" aria-label="Number 8">8</button>
+            <button data-number="9" aria-label="Number 9">9</button>
+            <button class="btn-operator" data-operator="×" aria-label="Multiply">×</button>
             
-            <button data-number="4">4</button>
-            <button data-number="5">5</button>
-            <button data-number="6">6</button>
-            <button class="btn-operator" data-operator="-">-</button>
+            <button data-number="4" aria-label="Number 4">4</button>
+            <button data-number="5" aria-label="Number 5">5</button>
+            <button data-number="6" aria-label="Number 6">6</button>
+            <button class="btn-operator" data-operator="-" aria-label="Subtract">-</button>
             
-            <button data-number="1">1</button>
-            <button data-number="2">2</button>
-            <button data-number="3">3</button>
-            <button class="btn-operator" data-operator="+">+</button>
+            <button data-number="1" aria-label="Number 1">1</button>
+            <button data-number="2" aria-label="Number 2">2</button>
+            <button data-number="3" aria-label="Number 3">3</button>
+            <button class="btn-operator" data-operator="+" aria-label="Add">+</button>
             
-            <button class="btn-zero" data-number="0">0</button>
-            <button data-number=".">.</button>
-            <button class="btn-equals" data-action="equals">=</button>
+            <button class="btn-zero" data-number="0" aria-label="Number 0">0</button>
+            <button data-number="." aria-label="Decimal point">.</button>
+            <button class="btn-equals" data-action="equals" aria-label="Calculate result">=</button>
         </div>
     </div>
 
     <script>
-        // Calculator logic will be added in subsequent tasks
-        // This file establishes the UI and layout structure
-        
         const previousOperandDisplay = document.getElementById('previousOperand');
         const currentOperandDisplay = document.getElementById('currentOperand');
         
-        // Basic event listeners for visual feedback (functionality to be implemented)
+        // Button click event listeners
         document.querySelectorAll('button').forEach(button => {
             button.addEventListener('click', function() {
-                // Visual feedback only - logic will be added in next task
-                console.log('Button clicked:', this.textContent);
+                handleButtonClick(this);
             });
         });
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(event) {
+            // Number keys (0-9)
+            if (event.key >= '0' && event.key <= '9') {
+                event.preventDefault();
+                const button = document.querySelector(`button[data-number="${event.key}"]`);
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+            // Decimal point
+            else if (event.key === '.') {
+                event.preventDefault();
+                const button = document.querySelector('button[data-number="."]');
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+            // Operators
+            else if (event.key === '+') {
+                event.preventDefault();
+                const button = document.querySelector('button[data-operator="+"]');
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+            else if (event.key === '-') {
+                event.preventDefault();
+                const button = document.querySelector('button[data-operator="-"]');
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+            else if (event.key === '*') {
+                event.preventDefault();
+                const button = document.querySelector('button[data-operator="×"]');
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+            else if (event.key === '/') {
+                event.preventDefault();
+                const button = document.querySelector('button[data-operator="÷"]');
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+            // Enter key for equals
+            else if (event.key === 'Enter' || event.key === '=') {
+                event.preventDefault();
+                const button = document.querySelector('button[data-action="equals"]');
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+            // Escape key for clear
+            else if (event.key === 'Escape') {
+                event.preventDefault();
+                const button = document.querySelector('button[data-action="clear"]');
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+            // Backspace for delete
+            else if (event.key === 'Backspace') {
+                event.preventDefault();
+                const button = document.querySelector('button[data-action="delete"]');
+                if (button) {
+                    button.focus();
+                    handleButtonClick(button);
+                }
+            }
+        });
+
+        function handleButtonClick(button) {
+            // Visual feedback only - logic will be added in next task
+            console.log('Button activated:', button.textContent);
+            
+            // Add visual feedback for keyboard users
+            button.style.transform = 'translateY(0)';
+            button.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+            setTimeout(() => {
+                button.style.transform = '';
+                button.style.boxShadow = '';
+            }, 100);
+        }
     </script>
 </body>
 </html>
