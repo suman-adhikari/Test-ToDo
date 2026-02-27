@@ -46,6 +46,8 @@
         /**
          * Centralized key mapping system
          * Maps keyboard keys to calculator button selectors
+         * Note: * maps to × (multiplication symbol) and / maps to ÷ (division symbol)
+         * to match the visual operators displayed on the calculator buttons
          */
         const KEY_MAP = {
             // Number keys (0-9)
@@ -79,16 +81,23 @@
         /**
          * Keyboard Event Handler
          * Handles all keyboard input and maps to calculator buttons
+         * @class
          */
         class KeyboardHandler {
-            constructor(keyMap) {
+            /**
+             * Create a keyboard handler
+             * @param {Object} keyMap - Map of keyboard keys to button selectors
+             * @param {Function} buttonClickCallback - Callback function to invoke when a button is activated
+             */
+            constructor(keyMap, buttonClickCallback) {
                 this.keyMap = keyMap;
-                this.activeButton = null;
+                this.buttonClickCallback = buttonClickCallback;
                 this.init();
             }
 
             /**
              * Initialize global keyboard event listener
+             * @returns {void}
              */
             init() {
                 document.addEventListener('keydown', (event) => {
@@ -99,6 +108,7 @@
             /**
              * Handle keyboard key press
              * @param {KeyboardEvent} event - The keyboard event
+             * @returns {void}
              */
             handleKeyPress(event) {
                 const mapping = this.keyMap[event.key];
@@ -114,37 +124,13 @@
             }
 
             /**
-             * Activate button with focus and visual feedback
+             * Activate button with visual feedback
              * @param {HTMLElement} button - The button element to activate
+             * @returns {void}
              */
             activateButton(button) {
-                // Focus management
-                this.setActiveButton(button);
-                
-                // Trigger button action
-                handleButtonClick(button);
-            }
-
-            /**
-             * Set active button with focus
-             * @param {HTMLElement} button - The button to set as active
-             */
-            setActiveButton(button) {
-                if (this.activeButton) {
-                    this.activeButton.blur();
-                }
-                this.activeButton = button;
-                button.focus();
-            }
-
-            /**
-             * Clear active button
-             */
-            clearActiveButton() {
-                if (this.activeButton) {
-                    this.activeButton.blur();
-                    this.activeButton = null;
-                }
+                // Trigger button action via callback
+                this.buttonClickCallback(button);
             }
         }
 
@@ -158,6 +144,7 @@
         /**
          * Handle button click/activation
          * @param {HTMLElement} button - The button that was clicked or activated
+         * @returns {void}
          */
         function handleButtonClick(button) {
             // Visual feedback only - logic will be added in next task
@@ -170,14 +157,13 @@
         /**
          * Provide visual feedback for button activation
          * @param {HTMLElement} button - The button to provide feedback for
+         * @returns {void}
          */
         function provideFeedback(button) {
-            button.style.transform = 'translateY(0)';
-            button.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+            button.classList.add('pressed');
             
             setTimeout(() => {
-                button.style.transform = '';
-                button.style.boxShadow = '';
+                button.classList.remove('pressed');
             }, 100);
         }
 
@@ -192,8 +178,8 @@
             });
         });
 
-        // Initialize keyboard event handler
-        const keyboardHandler = new KeyboardHandler(KEY_MAP);
+        // Initialize keyboard event handler with dependency injection
+        const keyboardHandler = new KeyboardHandler(KEY_MAP, handleButtonClick);
     </script>
 </body>
 </html>
