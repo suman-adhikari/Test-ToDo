@@ -39,110 +39,161 @@
     </div>
 
     <script>
+        // ============================================================================
+        // KEYBOARD EVENT LISTENER INFRASTRUCTURE
+        // ============================================================================
+        
+        /**
+         * Centralized key mapping system
+         * Maps keyboard keys to calculator button selectors
+         */
+        const KEY_MAP = {
+            // Number keys (0-9)
+            '0': { selector: 'button[data-number="0"]', type: 'number' },
+            '1': { selector: 'button[data-number="1"]', type: 'number' },
+            '2': { selector: 'button[data-number="2"]', type: 'number' },
+            '3': { selector: 'button[data-number="3"]', type: 'number' },
+            '4': { selector: 'button[data-number="4"]', type: 'number' },
+            '5': { selector: 'button[data-number="5"]', type: 'number' },
+            '6': { selector: 'button[data-number="6"]', type: 'number' },
+            '7': { selector: 'button[data-number="7"]', type: 'number' },
+            '8': { selector: 'button[data-number="8"]', type: 'number' },
+            '9': { selector: 'button[data-number="9"]', type: 'number' },
+            
+            // Decimal point
+            '.': { selector: 'button[data-number="."]', type: 'number' },
+            
+            // Operators
+            '+': { selector: 'button[data-operator="+"]', type: 'operator' },
+            '-': { selector: 'button[data-operator="-"]', type: 'operator' },
+            '*': { selector: 'button[data-operator="×"]', type: 'operator' },
+            '/': { selector: 'button[data-operator="÷"]', type: 'operator' },
+            
+            // Actions
+            'Enter': { selector: 'button[data-action="equals"]', type: 'action' },
+            '=': { selector: 'button[data-action="equals"]', type: 'action' },
+            'Escape': { selector: 'button[data-action="clear"]', type: 'action' },
+            'Backspace': { selector: 'button[data-action="delete"]', type: 'action' }
+        };
+
+        /**
+         * Keyboard Event Handler
+         * Handles all keyboard input and maps to calculator buttons
+         */
+        class KeyboardHandler {
+            constructor(keyMap) {
+                this.keyMap = keyMap;
+                this.activeButton = null;
+                this.init();
+            }
+
+            /**
+             * Initialize global keyboard event listener
+             */
+            init() {
+                document.addEventListener('keydown', (event) => {
+                    this.handleKeyPress(event);
+                });
+            }
+
+            /**
+             * Handle keyboard key press
+             * @param {KeyboardEvent} event - The keyboard event
+             */
+            handleKeyPress(event) {
+                const mapping = this.keyMap[event.key];
+                
+                if (mapping) {
+                    event.preventDefault();
+                    const button = document.querySelector(mapping.selector);
+                    
+                    if (button) {
+                        this.activateButton(button);
+                    }
+                }
+            }
+
+            /**
+             * Activate button with focus and visual feedback
+             * @param {HTMLElement} button - The button element to activate
+             */
+            activateButton(button) {
+                // Focus management
+                this.setActiveButton(button);
+                
+                // Trigger button action
+                handleButtonClick(button);
+            }
+
+            /**
+             * Set active button with focus
+             * @param {HTMLElement} button - The button to set as active
+             */
+            setActiveButton(button) {
+                if (this.activeButton) {
+                    this.activeButton.blur();
+                }
+                this.activeButton = button;
+                button.focus();
+            }
+
+            /**
+             * Clear active button
+             */
+            clearActiveButton() {
+                if (this.activeButton) {
+                    this.activeButton.blur();
+                    this.activeButton = null;
+                }
+            }
+        }
+
+        // ============================================================================
+        // CALCULATOR DISPLAY AND BUTTON HANDLING
+        // ============================================================================
+        
         const previousOperandDisplay = document.getElementById('previousOperand');
         const currentOperandDisplay = document.getElementById('currentOperand');
         
-        // Button click event listeners
+        /**
+         * Handle button click/activation
+         * @param {HTMLElement} button - The button that was clicked or activated
+         */
+        function handleButtonClick(button) {
+            // Visual feedback only - logic will be added in next task
+            console.log('Button activated:', button.textContent);
+            
+            // Add visual feedback
+            provideFeedback(button);
+        }
+
+        /**
+         * Provide visual feedback for button activation
+         * @param {HTMLElement} button - The button to provide feedback for
+         */
+        function provideFeedback(button) {
+            button.style.transform = 'translateY(0)';
+            button.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
+            
+            setTimeout(() => {
+                button.style.transform = '';
+                button.style.boxShadow = '';
+            }, 100);
+        }
+
+        // ============================================================================
+        // INITIALIZATION
+        // ============================================================================
+        
+        // Initialize button click event listeners
         document.querySelectorAll('button').forEach(button => {
             button.addEventListener('click', function() {
                 handleButtonClick(this);
             });
         });
 
-        // Keyboard navigation support
-        document.addEventListener('keydown', function(event) {
-            // Number keys (0-9)
-            if (event.key >= '0' && event.key <= '9') {
-                event.preventDefault();
-                const button = document.querySelector(`button[data-number="${event.key}"]`);
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-            // Decimal point
-            else if (event.key === '.') {
-                event.preventDefault();
-                const button = document.querySelector('button[data-number="."]');
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-            // Operators
-            else if (event.key === '+') {
-                event.preventDefault();
-                const button = document.querySelector('button[data-operator="+"]');
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-            else if (event.key === '-') {
-                event.preventDefault();
-                const button = document.querySelector('button[data-operator="-"]');
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-            else if (event.key === '*') {
-                event.preventDefault();
-                const button = document.querySelector('button[data-operator="×"]');
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-            else if (event.key === '/') {
-                event.preventDefault();
-                const button = document.querySelector('button[data-operator="÷"]');
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-            // Enter key for equals
-            else if (event.key === 'Enter' || event.key === '=') {
-                event.preventDefault();
-                const button = document.querySelector('button[data-action="equals"]');
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-            // Escape key for clear
-            else if (event.key === 'Escape') {
-                event.preventDefault();
-                const button = document.querySelector('button[data-action="clear"]');
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-            // Backspace for delete
-            else if (event.key === 'Backspace') {
-                event.preventDefault();
-                const button = document.querySelector('button[data-action="delete"]');
-                if (button) {
-                    button.focus();
-                    handleButtonClick(button);
-                }
-            }
-        });
-
-        function handleButtonClick(button) {
-            // Visual feedback only - logic will be added in next task
-            console.log('Button activated:', button.textContent);
-            
-            // Add visual feedback for keyboard users
-            button.style.transform = 'translateY(0)';
-            button.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
-            setTimeout(() => {
-                button.style.transform = '';
-                button.style.boxShadow = '';
-            }, 100);
-        }
+        // Initialize keyboard event handler
+        const keyboardHandler = new KeyboardHandler(KEY_MAP);
     </script>
 </body>
 </html>
