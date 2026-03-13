@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Player Naming Tests</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .test-suite {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-case {
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 4px solid #ddd;
+            background: #f9f9f9;
+        }
+        .test-case.pass {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+        .test-case.fail {
+            border-left-color: #f44336;
+            background: #fef5f5;
+        }
+        .test-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .test-result {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .summary {
+            margin-top: 30px;
+            padding: 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .summary.all-pass {
+            background: #4caf50;
+        }
+        .summary.has-fail {
+            background: #f44336;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        #testFrame {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Tic-Tac-Toe Player Naming Feature Tests</h1>
+    
+    <div>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="location.reload()">Reset</button>
+    </div>
+
+    <div id="testResults"></div>
+    <div id="summary"></div>
+
+    <iframe id="testFrame" src="tic-tac-toe.html"></iframe>
+
+    <script>
+        const tests = [];
+        let passCount = 0;
+        let failCount = 0;
+
+        // Test framework
+        function test(name, fn) {
+            tests.push({ name, fn });
+        }
+
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(message || 'Assertion failed');
+            }
+        }
+
+        function assertEqual(actual, expected, message) {
+            if (actual !== expected) {
+                throw new Error(message || `Expected ${expected}, got ${actual}`);
+            }
+        }
+
+        function assertContains(text, substring, message) {
+            if (!text.includes(substring)) {
+                throw new Error(message || `Expected text to contain "${substring}", got "${text}"`);
+            }
+        }
+
+        // Helper to get game state from iframe
+        function getGameState() {
+            const frame = document.getElementById('testFrame');
+            return frame.contentWindow.gameState;
+        }
+
+        function getDocument() {
+            return document.getElementById('testFrame').contentDocument;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Define tests
+        test('Player setup section exists', () => {
+            const doc = getDocument();
+            const playerSetup = doc.getElementById('playerSetup');
+            assert(playerSetup, 'Player setup section should exist');
+        });
+
+        test('Player name input fields exist', () => {
+            const doc = getDocument();
+            const playerXInput = doc.getElementById('playerXName');
+            const playerOInput = doc.getElementById('playerOName');
+            
+            assert(playerXInput, 'Player X input should exist');
+            assert(playerOInput, 'Player O input should exist');
+            assertEqual(playerXInput.getAttribute('maxlength'), '20', 'Player X input should have maxlength 20');
+            assertEqual(playerOInput.getAttribute('maxlength'), '20', 'Player O input should have maxlength 20');
+        });
+
+        test('Start game button exists', () => {
+            const doc = getDocument();
+            const startBtn = doc.getElementById('startGameBtn');
+            assert(startBtn, 'Start game button should exist');
+            assertContains(startBtn.textContent, 'Start', 'Button should say Start');
+        });
+
+        test('Game section is initially hidden', () => {
+            const doc = getDocument();
+            const gameSection = doc.getElementById('gameSection');
+            assert(!gameSection.classList.contains('active'), 'Game section should not be active initially');
+        });
+
+        test('Scoreboard displays player names', () => {
+            const doc = getDocument();
+            const displayPlayerX = doc.getElementById('displayPlayerX');
+            const displayPlayerO = doc.getElementById('displayPlayerO');
+            
+            assert(displayPlayerX, 'Player X display name element should exist');
+            assert(displayPlayerO, 'Player O display name element should exist');
+        });
+
+        test('Can set custom player names', async () => {
+            const doc = getDocument();
+            const playerXInput = doc.getElementById('playerXName');
+            const playerOInput = doc.getElementById('playerOName');
+            const startBtn = doc.getElementById('startGameBtn');
+            
+            // Set names
+            playerXInput.value = 'Alice';
+            playerOInput.value = 'Bob';
+            
+            // Click start
+            startBtn.click();
+            await sleep(100);
+            
+            const state = getGameState();
+            assertEqual(state.playerNames.X, 'Alice', 'Player X name should be Alice');
+            assertEqual(state.playerNames.O, 'Bob', 'Player O name should be Bob');
+        });
+
+        test('Default names used when inputs are empty', async () => {
+            // Reload frame to reset
+            const frame = document.getElementById('testFrame');
+            frame.src = 'tic-tac-toe.html';
+            await sleep(500);
+            
+            const doc = getDocument();
+            const startBtn = doc.getElementById('startGameBtn');
+            
+            // Click start without entering names
+            startBtn.click();
+            await sleep(100);
+            
+            const state = getGameState();
+            assertEqual(state.playerNames.X, 'Player X', 'Default name for X should be used');
+            assertEqual(state.playerNames.O, 'Player O', 'Default name for O should be used');
+        });
+
+        test('Player names appear in scoreboard', async () => {
+            const frame = document.getElementById('testFrame');
+            frame.src = 'tic-tac-toe.html';
+            await sleep(500);
+            
+            const doc = getDocument();
+            const playerXInput = doc.getElementById('playerXName');
+            const playerOInput = doc.getElementById('playerOName');
+            const startBtn = doc.getElementById('startGameBtn');
+            
+            playerXInput.value = 'Charlie';
+            playerOInput.value = 'Diana';
+            startBtn.click();
+            await sleep(100);
+            
+            const displayPlayerX = doc.getElementById('displayPlayerX');
+            const displayPlayerO = doc.getElementById('displayPlayerO');
+            
+            assertEqual(displayPlayerX.textContent, 'Charlie', 'Scoreboard should show Charlie');
+            assertEqual(displayPlayerO.textContent, 'Diana', 'Scoreboard should show Diana');
+        });
+
+        test('Player names appear in status message', async () => {
+            const frame = document.getElementById('testFrame');
+            frame.src = 'tic-tac-toe.html';
+            await sleep(500);
+            
+            const doc = getDocument();
+            const playerXInput = doc.getElementById('playerXName');
+            const playerOInput = doc.getElementById('playerOName');
+            const startBtn = doc.getElementById('startGameBtn');
+            
+            playerXInput.value = 'Eve';
+            playerOInput.value = 'Frank';
+            startBtn.click();
+            await sleep(100);
+            
+            const status = doc.getElementById('status');
+            assertContains(status.textContent, 'Eve', 'Status should contain player name Eve');
+        });
+
+        test('Back to setup button exists', async () => {
+            const frame = document.getElementById('testFrame');
+            frame.src = 'tic-tac-toe.html';
+            await sleep(500);
+            
+            const doc = getDocument();
+            const startBtn = doc.getElementById('startGameBtn');
+            startBtn.click();
+            await sleep(100);
+            
+            const backBtn = doc.getElementById('backToSetupBtn');
+            assert(backBtn, 'Back to setup button should exist');
+        });
+
+        test('Scoreboard tracks wins with player names', async () => {
+            const frame = document.getElementById('testFrame');
+            frame.src = 'tic-tac-toe.html';
+            await sleep(500);
+            
+            const doc = getDocument();
+            const playerXInput = doc.getElementById('playerXName');
+            const playerOInput = doc.getElementById('playerOName');
+            const startBtn = doc.getElementById('startGameBtn');
+            
+            playerXInput.value = 'Winner';
+            playerOInput.value = 'Loser';
+            startBtn.click();
+            await sleep(100);
+            
+            // Simulate X winning
+            const cells = doc.querySelectorAll('.cell');
+            cells[0].click(); // X
+            cells[3].click(); // O
+            cells[1].click(); // X
+            cells[4].click(); // O
+            cells[2].click(); // X wins
+            
+            await sleep(100);
+            
+            const state = getGameState();
+            assertEqual(state.seriesScore.X, 1, 'X should have 1 win');
+            
+            const status = doc.getElementById('status');
+            assertContains(status.textContent, 'Winner', 'Win message should contain player name');
+        });
+
+        test('Game state stores player names', () => {
+            const state = getGameState();
+            assert(state.playerNames, 'Game state should have playerNames object');
+            assert(state.playerNames.X !== undefined, 'Player X name should be defined');
+            assert(state.playerNames.O !== undefined, 'Player O name should be defined');
+        });
+
+        // Run all tests
+        async function runAllTests() {
+            const resultsDiv = document.getElementById('testResults');
+            const summaryDiv = document.getElementById('summary');
+            resultsDiv.innerHTML = '';
+            summaryDiv.innerHTML = '';
+            passCount = 0;
+            failCount = 0;
+
+            // Load the game first
+            const frame = document.getElementById('testFrame');
+            frame.src = 'tic-tac-toe.html';
+            await sleep(1000); // Wait for game to load
+
+            for (const test of tests) {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-case';
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'test-name';
+                nameDiv.textContent = test.name;
+                
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'test-result';
+
+                try {
+                    await test.fn();
+                    testDiv.classList.add('pass');
+                    resultDiv.textContent = '✓ PASS';
+                    passCount++;
+                } catch (error) {
+                    testDiv.classList.add('fail');
+                    resultDiv.textContent = `✗ FAIL: ${error.message}`;
+                    failCount++;
+                }
+
+                testDiv.appendChild(nameDiv);
+                testDiv.appendChild(resultDiv);
+                resultsDiv.appendChild(testDiv);
+            }
+
+            // Show summary
+            const total = passCount + failCount;
+            const summaryClass = failCount === 0 ? 'all-pass' : 'has-fail';
+            summaryDiv.className = `summary ${summaryClass}`;
+            summaryDiv.innerHTML = `
+                <h2>Test Results</h2>
+                <p>Total: ${total} | Passed: ${passCount} | Failed: ${failCount}</p>
+                <p>${failCount === 0 ? '🎉 All tests passed!' : '⚠️ Some tests failed'}</p>
+            `;
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 500);
+        });
+    </script>
+</body>
+</html>

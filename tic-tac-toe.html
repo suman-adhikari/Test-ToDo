@@ -37,6 +37,107 @@
             font-size: 2.5em;
         }
 
+        /* Player Setup Section */
+        .player-setup {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+        }
+
+        .player-setup.hidden {
+            display: none;
+        }
+
+        .player-setup h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .player-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .player-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .player-input-group label {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .player-input-group.player-x label {
+            color: #667eea;
+        }
+
+        .player-input-group.player-o label {
+            color: #764ba2;
+        }
+
+        .player-input-group input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .player-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .player-input-group.player-o input:focus {
+            border-color: #764ba2;
+        }
+
+        .start-game-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .start-game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-game-btn:active {
+            transform: translateY(0);
+        }
+
+        .start-game-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Game Section */
+        .game-section {
+            display: none;
+        }
+
+        .game-section.active {
+            display: block;
+        }
+
         .game-mode-selector {
             background: #f8f9fa;
             border-radius: 10px;
@@ -121,6 +222,7 @@
             font-size: 1.1em;
             font-weight: bold;
             margin-bottom: 5px;
+            word-break: break-word;
         }
 
         .score-item.player-x .player-name {
@@ -217,6 +319,25 @@
             transform: translateY(0);
         }
 
+        .back-to-setup-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            color: #667eea;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .back-to-setup-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -240,7 +361,8 @@
             }
 
             .score-board h3,
-            .game-mode-selector h3 {
+            .game-mode-selector h3,
+            .player-setup h3 {
                 font-size: 1em;
             }
         }
@@ -250,49 +372,69 @@
     <div class="container">
         <h1>Tic-Tac-Toe</h1>
         
-        <!-- Game Mode Selector -->
-        <div class="game-mode-selector">
-            <h3>Game Mode</h3>
-            <div class="mode-options">
-                <div class="mode-option">
-                    <input type="radio" id="singleGame" name="gameMode" value="single" checked>
-                    <label for="singleGame">Single Game</label>
+        <!-- Player Setup Section -->
+        <div class="player-setup" id="playerSetup">
+            <h3>Enter Player Names</h3>
+            <div class="player-inputs">
+                <div class="player-input-group player-x">
+                    <label for="playerXName">Player 1 (X):</label>
+                    <input type="text" id="playerXName" placeholder="Enter name for Player X" maxlength="20">
                 </div>
-                <div class="mode-option">
-                    <input type="radio" id="bestOf3" name="gameMode" value="bestOf3">
-                    <label for="bestOf3">Best of 3</label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Score Board (only for Best of 3) -->
-        <div class="score-board" id="scoreBoard">
-            <h3>Series Score</h3>
-            <div class="scores">
-                <div class="score-item player-x">
-                    <div class="player-name">Player X</div>
-                    <div class="score-value" id="scoreX">0</div>
-                </div>
-                <div class="score-item player-o">
-                    <div class="player-name">Player O</div>
-                    <div class="score-value" id="scoreO">0</div>
+                <div class="player-input-group player-o">
+                    <label for="playerOName">Player 2 (O):</label>
+                    <input type="text" id="playerOName" placeholder="Enter name for Player O" maxlength="20">
                 </div>
             </div>
+            <button class="start-game-btn" id="startGameBtn">Start Game</button>
         </div>
 
-        <div class="status" id="status">Current Player: X</div>
-        <div class="board" id="board">
-            <div class="cell" data-index="0"></div>
-            <div class="cell" data-index="1"></div>
-            <div class="cell" data-index="2"></div>
-            <div class="cell" data-index="3"></div>
-            <div class="cell" data-index="4"></div>
-            <div class="cell" data-index="5"></div>
-            <div class="cell" data-index="6"></div>
-            <div class="cell" data-index="7"></div>
-            <div class="cell" data-index="8"></div>
+        <!-- Game Section -->
+        <div class="game-section" id="gameSection">
+            <!-- Game Mode Selector -->
+            <div class="game-mode-selector">
+                <h3>Game Mode</h3>
+                <div class="mode-options">
+                    <div class="mode-option">
+                        <input type="radio" id="singleGame" name="gameMode" value="single" checked>
+                        <label for="singleGame">Single Game</label>
+                    </div>
+                    <div class="mode-option">
+                        <input type="radio" id="bestOf3" name="gameMode" value="bestOf3">
+                        <label for="bestOf3">Best of 3</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Board (always visible with player names) -->
+            <div class="score-board active" id="scoreBoard">
+                <h3>Scoreboard</h3>
+                <div class="scores">
+                    <div class="score-item player-x">
+                        <div class="player-name" id="displayPlayerX">Player X</div>
+                        <div class="score-value" id="scoreX">0</div>
+                    </div>
+                    <div class="score-item player-o">
+                        <div class="player-name" id="displayPlayerO">Player O</div>
+                        <div class="score-value" id="scoreO">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status" id="status">Current Player: X</div>
+            <div class="board" id="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+            <button class="reset-btn" id="resetBtn">New Game</button>
+            <button class="back-to-setup-btn" id="backToSetupBtn">Change Player Names</button>
         </div>
-        <button class="reset-btn" id="resetBtn">New Game</button>
     </div>
 
     <script>
@@ -306,16 +448,28 @@
                 X: 0,
                 O: 0
             },
-            gamesPlayed: 0
+            gamesPlayed: 0,
+            playerNames: {
+                X: 'Player X',
+                O: 'Player O'
+            }
         };
 
         // DOM elements
+        const playerSetup = document.getElementById('playerSetup');
+        const gameSection = document.getElementById('gameSection');
+        const playerXNameInput = document.getElementById('playerXName');
+        const playerONameInput = document.getElementById('playerOName');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const backToSetupBtn = document.getElementById('backToSetupBtn');
         const cells = document.querySelectorAll('.cell');
         const statusDisplay = document.getElementById('status');
         const resetBtn = document.getElementById('resetBtn');
         const scoreBoard = document.getElementById('scoreBoard');
         const scoreXDisplay = document.getElementById('scoreX');
         const scoreODisplay = document.getElementById('scoreO');
+        const displayPlayerX = document.getElementById('displayPlayerX');
+        const displayPlayerO = document.getElementById('displayPlayerO');
         const gameModeRadios = document.querySelectorAll('input[name="gameMode"]');
 
         // Winning combinations
@@ -336,11 +490,72 @@
                 cell.addEventListener('click', handleCellClick);
             });
             resetBtn.addEventListener('click', resetGame);
+            startGameBtn.addEventListener('click', handleStartGame);
+            backToSetupBtn.addEventListener('click', backToSetup);
             
             // Add event listeners for game mode selection
             gameModeRadios.forEach(radio => {
                 radio.addEventListener('change', handleGameModeChange);
             });
+
+            // Enable/disable start button based on input
+            playerXNameInput.addEventListener('input', validatePlayerNames);
+            playerONameInput.addEventListener('input', validatePlayerNames);
+        }
+
+        // Validate player names
+        function validatePlayerNames() {
+            const xName = playerXNameInput.value.trim();
+            const oName = playerONameInput.value.trim();
+            
+            // Allow starting without names (will use defaults)
+            startGameBtn.disabled = false;
+        }
+
+        // Handle start game
+        function handleStartGame() {
+            const xName = playerXNameInput.value.trim();
+            const oName = playerONameInput.value.trim();
+
+            // Set player names (use defaults if empty)
+            gameState.playerNames.X = xName || 'Player X';
+            gameState.playerNames.O = oName || 'Player O';
+
+            // Update display
+            displayPlayerX.textContent = gameState.playerNames.X;
+            displayPlayerO.textContent = gameState.playerNames.O;
+
+            // Show game section, hide setup
+            playerSetup.classList.add('hidden');
+            gameSection.classList.add('active');
+
+            // Update status with player name
+            updateStatus();
+        }
+
+        // Back to setup
+        function backToSetup() {
+            if (gameState.gamesPlayed > 0 || gameState.seriesScore.X > 0 || gameState.seriesScore.O > 0) {
+                if (!confirm('Going back will reset all progress. Continue?')) {
+                    return;
+                }
+            }
+
+            // Reset everything
+            gameState.seriesScore.X = 0;
+            gameState.seriesScore.O = 0;
+            gameState.gamesPlayed = 0;
+            resetGame(true);
+
+            // Show setup, hide game
+            playerSetup.classList.remove('hidden');
+            gameSection.classList.remove('active');
+        }
+
+        // Update status message
+        function updateStatus() {
+            const currentPlayerName = gameState.playerNames[gameState.currentPlayer];
+            statusDisplay.textContent = `Current Player: ${currentPlayerName}`;
         }
 
         // Handle game mode change
@@ -357,18 +572,7 @@
             }
             
             gameState.gameMode = newMode;
-            updateGameMode();
             resetGame(true); // Full reset
-        }
-
-        // Update UI based on game mode
-        function updateGameMode() {
-            if (gameState.gameMode === 'bestOf3') {
-                scoreBoard.classList.add('active');
-                updateScoreDisplay();
-            } else {
-                scoreBoard.classList.remove('active');
-            }
         }
 
         // Update score display
@@ -406,7 +610,7 @@
 
             // Switch player
             gameState.currentPlayer = gameState.currentPlayer === 'X' ? 'O' : 'X';
-            statusDisplay.textContent = `Current Player: ${gameState.currentPlayer}`;
+            updateStatus();
         }
 
         // Handle game end
@@ -415,24 +619,23 @@
             gameState.gamesPlayed++;
 
             if (result === 'win') {
-                statusDisplay.textContent = `Player ${winner} Wins! 🎉`;
+                const winnerName = gameState.playerNames[winner];
+                statusDisplay.textContent = `${winnerName} Wins! 🎉`;
                 
-                // Update series score for Best of 3
-                if (gameState.gameMode === 'bestOf3') {
-                    gameState.seriesScore[winner]++;
-                    updateScoreDisplay();
-                    
-                    // Check if series is won
-                    if (gameState.seriesScore[winner] >= 2) {
-                        setTimeout(() => {
-                            statusDisplay.textContent = `Player ${winner} Wins the Series! 🏆`;
-                            resetBtn.textContent = 'Start New Series';
-                        }, 500);
-                    } else {
-                        setTimeout(() => {
-                            resetBtn.textContent = 'Next Game';
-                        }, 500);
-                    }
+                // Update series score
+                gameState.seriesScore[winner]++;
+                updateScoreDisplay();
+                
+                // Check if series is won (Best of 3)
+                if (gameState.gameMode === 'bestOf3' && gameState.seriesScore[winner] >= 2) {
+                    setTimeout(() => {
+                        statusDisplay.textContent = `${winnerName} Wins the Series! 🏆`;
+                        resetBtn.textContent = 'Start New Series';
+                    }, 500);
+                } else if (gameState.gameMode === 'bestOf3') {
+                    setTimeout(() => {
+                        resetBtn.textContent = 'Next Game';
+                    }, 500);
                 }
             } else if (result === 'draw') {
                 statusDisplay.textContent = "It's a Draw! 🤝";
@@ -491,7 +694,7 @@
             gameState.currentPlayer = 'X';
             gameState.board = ['', '', '', '', '', '', '', '', ''];
             gameState.gameActive = true;
-            statusDisplay.textContent = 'Current Player: X';
+            updateStatus();
             resetBtn.textContent = 'New Game';
 
             cells.forEach(cell => {
@@ -502,7 +705,6 @@
 
         // Start the game
         init();
-        updateGameMode();
     </script>
 </body>
 </html>
