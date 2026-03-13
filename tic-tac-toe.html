@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .game-mode-selector {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+        }
+
+        .game-mode-selector h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .mode-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .mode-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .mode-option:hover {
+            background: #e9ecef;
+        }
+
+        .mode-option input[type="radio"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .mode-option label {
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .score-board {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+            border: 2px solid #764ba2;
+        }
+
+        .score-board.active {
+            display: block;
+        }
+
+        .score-board h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-item .player-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .score-item.player-x .player-name {
+            color: #667eea;
+        }
+
+        .score-item.player-o .player-name {
+            color: #764ba2;
+        }
+
+        .score-item .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #667eea;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+            aspect-ratio: 1;
+        }
+
+        .cell {
+            background: #f8f9fa;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            font-size: 3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .cell:hover:not(.taken) {
+            background: #e9ecef;
+            transform: scale(1.05);
+        }
+
+        .cell.taken {
+            cursor: not-allowed;
+        }
+
+        .cell.x {
+            color: #667eea;
+        }
+
+        .cell.o {
+            color: #764ba2;
+        }
+
+        .cell.winner {
+            background: #ffd700;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .status {
+                font-size: 1.2em;
+            }
+
+            .cell {
+                font-size: 2em;
+            }
+
+            .mode-options {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .score-board h3,
+            .game-mode-selector h3 {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tic-Tac-Toe</h1>
+        
+        <!-- Game Mode Selector -->
+        <div class="game-mode-selector">
+            <h3>Game Mode</h3>
+            <div class="mode-options">
+                <div class="mode-option">
+                    <input type="radio" id="singleGame" name="gameMode" value="single" checked>
+                    <label for="singleGame">Single Game</label>
+                </div>
+                <div class="mode-option">
+                    <input type="radio" id="bestOf3" name="gameMode" value="bestOf3">
+                    <label for="bestOf3">Best of 3</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Board (only for Best of 3) -->
+        <div class="score-board" id="scoreBoard">
+            <h3>Series Score</h3>
+            <div class="scores">
+                <div class="score-item player-x">
+                    <div class="player-name">Player X</div>
+                    <div class="score-value" id="scoreX">0</div>
+                </div>
+                <div class="score-item player-o">
+                    <div class="player-name">Player O</div>
+                    <div class="score-value" id="scoreO">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status">Current Player: X</div>
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <button class="reset-btn" id="resetBtn">New Game</button>
+    </div>
+
+    <script>
+        // Game state management
+        const gameState = {
+            currentPlayer: 'X',
+            board: ['', '', '', '', '', '', '', '', ''],
+            gameActive: true,
+            gameMode: 'single', // 'single' or 'bestOf3'
+            seriesScore: {
+                X: 0,
+                O: 0
+            },
+            gamesPlayed: 0
+        };
+
+        // DOM elements
+        const cells = document.querySelectorAll('.cell');
+        const statusDisplay = document.getElementById('status');
+        const resetBtn = document.getElementById('resetBtn');
+        const scoreBoard = document.getElementById('scoreBoard');
+        const scoreXDisplay = document.getElementById('scoreX');
+        const scoreODisplay = document.getElementById('scoreO');
+        const gameModeRadios = document.querySelectorAll('input[name="gameMode"]');
+
+        // Winning combinations
+        const winningCombinations = [
+            [0, 1, 2], // Top row
+            [3, 4, 5], // Middle row
+            [6, 7, 8], // Bottom row
+            [0, 3, 6], // Left column
+            [1, 4, 7], // Middle column
+            [2, 5, 8], // Right column
+            [0, 4, 8], // Diagonal top-left to bottom-right
+            [2, 4, 6]  // Diagonal top-right to bottom-left
+        ];
+
+        // Initialize game
+        function init() {
+            cells.forEach(cell => {
+                cell.addEventListener('click', handleCellClick);
+            });
+            resetBtn.addEventListener('click', resetGame);
+            
+            // Add event listeners for game mode selection
+            gameModeRadios.forEach(radio => {
+                radio.addEventListener('change', handleGameModeChange);
+            });
+        }
+
+        // Handle game mode change
+        function handleGameModeChange(e) {
+            const newMode = e.target.value;
+            
+            // Only allow mode change if game is fresh or user confirms
+            if (gameState.gamesPlayed > 0 || gameState.seriesScore.X > 0 || gameState.seriesScore.O > 0) {
+                if (!confirm('Changing game mode will reset all progress. Continue?')) {
+                    // Revert radio selection
+                    document.querySelector(`input[value="${gameState.gameMode}"]`).checked = true;
+                    return;
+                }
+            }
+            
+            gameState.gameMode = newMode;
+            updateGameMode();
+            resetGame(true); // Full reset
+        }
+
+        // Update UI based on game mode
+        function updateGameMode() {
+            if (gameState.gameMode === 'bestOf3') {
+                scoreBoard.classList.add('active');
+                updateScoreDisplay();
+            } else {
+                scoreBoard.classList.remove('active');
+            }
+        }
+
+        // Update score display
+        function updateScoreDisplay() {
+            scoreXDisplay.textContent = gameState.seriesScore.X;
+            scoreODisplay.textContent = gameState.seriesScore.O;
+        }
+
+        // Handle cell click
+        function handleCellClick(e) {
+            const cell = e.target;
+            const index = cell.getAttribute('data-index');
+
+            // Check if cell is already taken or game is over
+            if (gameState.board[index] !== '' || !gameState.gameActive) {
+                return;
+            }
+
+            // Update board state
+            gameState.board[index] = gameState.currentPlayer;
+            cell.textContent = gameState.currentPlayer;
+            cell.classList.add('taken', gameState.currentPlayer.toLowerCase());
+
+            // Check for winner or draw
+            if (checkWinner()) {
+                highlightWinningCells();
+                handleGameEnd('win', gameState.currentPlayer);
+                return;
+            }
+
+            if (checkDraw()) {
+                handleGameEnd('draw');
+                return;
+            }
+
+            // Switch player
+            gameState.currentPlayer = gameState.currentPlayer === 'X' ? 'O' : 'X';
+            statusDisplay.textContent = `Current Player: ${gameState.currentPlayer}`;
+        }
+
+        // Handle game end
+        function handleGameEnd(result, winner = null) {
+            gameState.gameActive = false;
+            gameState.gamesPlayed++;
+
+            if (result === 'win') {
+                statusDisplay.textContent = `Player ${winner} Wins! 🎉`;
+                
+                // Update series score for Best of 3
+                if (gameState.gameMode === 'bestOf3') {
+                    gameState.seriesScore[winner]++;
+                    updateScoreDisplay();
+                    
+                    // Check if series is won
+                    if (gameState.seriesScore[winner] >= 2) {
+                        setTimeout(() => {
+                            statusDisplay.textContent = `Player ${winner} Wins the Series! 🏆`;
+                            resetBtn.textContent = 'Start New Series';
+                        }, 500);
+                    } else {
+                        setTimeout(() => {
+                            resetBtn.textContent = 'Next Game';
+                        }, 500);
+                    }
+                }
+            } else if (result === 'draw') {
+                statusDisplay.textContent = "It's a Draw! 🤝";
+                
+                if (gameState.gameMode === 'bestOf3') {
+                    setTimeout(() => {
+                        resetBtn.textContent = 'Next Game';
+                    }, 500);
+                }
+            }
+        }
+
+        // Check for winner
+        function checkWinner() {
+            for (let combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (gameState.board[a] && 
+                    gameState.board[a] === gameState.board[b] && 
+                    gameState.board[a] === gameState.board[c]) {
+                    return combination;
+                }
+            }
+            return null;
+        }
+
+        // Highlight winning cells
+        function highlightWinningCells() {
+            const winningCombo = checkWinner();
+            if (winningCombo) {
+                winningCombo.forEach(index => {
+                    cells[index].classList.add('winner');
+                });
+            }
+        }
+
+        // Check for draw
+        function checkDraw() {
+            return gameState.board.every(cell => cell !== '');
+        }
+
+        // Reset game
+        function resetGame(fullReset = false) {
+            // Check if series is complete
+            const seriesComplete = gameState.gameMode === 'bestOf3' && 
+                                   (gameState.seriesScore.X >= 2 || gameState.seriesScore.O >= 2);
+            
+            // Full reset if series is complete, mode changed, or explicitly requested
+            if (fullReset || seriesComplete) {
+                gameState.seriesScore.X = 0;
+                gameState.seriesScore.O = 0;
+                gameState.gamesPlayed = 0;
+                updateScoreDisplay();
+            }
+            
+            // Reset current game
+            gameState.currentPlayer = 'X';
+            gameState.board = ['', '', '', '', '', '', '', '', ''];
+            gameState.gameActive = true;
+            statusDisplay.textContent = 'Current Player: X';
+            resetBtn.textContent = 'New Game';
+
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('taken', 'x', 'o', 'winner');
+            });
+        }
+
+        // Start the game
+        init();
+        updateGameMode();
+    </script>
+</body>
+</html>
